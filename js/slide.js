@@ -1,3 +1,11 @@
+// Class to slide the elements while holding mouse button.
+
+// Parameters
+//slide: class or id selector for itens to be slided.
+//ie: '.slider' - No default, can't be empty
+//wrapper: class or id selector for the section or div wrapper.
+//ie: '.wrapper' - No default, can't be empty
+
 export default class Slide {
   constructor(slide, wrapper) {
     this.slide = document.querySelector(slide);
@@ -24,7 +32,6 @@ export default class Slide {
     // Getting and saving the click starting position
     this.dist.startX = event.clientX;
     this.wrapper.addEventListener("mousemove", this.onMove);
-    console.log("start"); //Test
   }
 
   // Triggered when user stop holding the mouse.
