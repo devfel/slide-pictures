@@ -84,9 +84,43 @@ export default class Slide {
     this.wrapper.addEventListener("touchend", this.onEnd);
   }
 
+  // Verify the index of each pictures, necessery to know next
+  // and previous elements and to not move beyond the borders.
+  slidesIndexNav(index) {
+    const last = this.slideArray.length - 1;
+    this.index = {
+      prev: index === 0 ? undefined : index - 1,
+      current: index,
+      next: index === last ? undefined : index + 1,
+    };
+  }
+
+  // Calculate the position so the picture is centralized on the screen.
+  slidePosition(slide) {
+    const margin = (this.wrapper.offsetWidth - slide.offsetWidth) / 2;
+    return -(slide.offsetLeft - margin);
+  }
+
+  // Slides configurations returning each picture elem and the center position.
+  slidesConfig() {
+    this.slideArray = [...this.slide.children].map((elem) => {
+      const position = this.slidePosition(elem);
+      return { position, elem };
+    });
+  }
+
+  // Change the view to centralize the selected picture
+  changeSlide(index) {
+    const currentSlide = this.slideArray[index];
+    this.moveSlide(currentSlide.position);
+    this.slidesIndexNav(index);
+    this.dist.finalPosition = currentSlide.position; // update position
+  }
+
   init() {
     this.bindEvents();
     this.addSlideEvents();
+    this.slidesConfig();
     return this;
   }
 }
