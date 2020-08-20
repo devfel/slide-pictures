@@ -28,20 +28,36 @@ export default class Slide {
 
   // Triggered when the user "mouse down".
   onStart(event) {
-    event.preventDefault();
-    // Getting and saving the click starting position
-    this.dist.startX = event.clientX;
-    this.wrapper.addEventListener("mousemove", this.onMove);
+    let moveType;
+
+    // Dektop - Getting and saving the click starting position
+    if (event.type === "mousedown") {
+      event.preventDefault();
+      this.dist.startX = event.clientX;
+      moveType = "mousemove";
+    }
+    // Mobile
+    else if (event.type === "touchstart") {
+      this.dist.startX = event.changedTouches[0].clientX;
+      moveType = "touchmove";
+    }
+
+    this.wrapper.addEventListener(moveType, this.onMove);
   }
 
-  // Triggered when user stop holding the mouse.
+  // Triggered when user stop holding the button/screen.
   onEnd(event) {
-    this.wrapper.removeEventListener("mousemove", this.onMove);
+    const moveType = event.type === "mouseup" ? "mousemove" : "touchmove";
+    this.wrapper.removeEventListener(moveType, this.onMove);
     this.dist.finalPosition = this.dist.movePosition;
   }
 
   onMove(event) {
-    const finalPosition = this.updatePosition(event.clientX);
+    const pointerPosition =
+      event.type === "mousemove"
+        ? event.clientX
+        : event.changedTouches[0].clientX;
+    const finalPosition = this.updatePosition(pointerPosition);
     this.moveSlide(finalPosition);
   }
 
@@ -59,8 +75,13 @@ export default class Slide {
   }
 
   addSlideEvents() {
+    // For desktop
     this.wrapper.addEventListener("mousedown", this.onStart);
     this.wrapper.addEventListener("mouseup", this.onEnd);
+
+    // For mobile
+    this.wrapper.addEventListener("touchstart", this.onStart);
+    this.wrapper.addEventListener("touchend", this.onEnd);
   }
 
   init() {
