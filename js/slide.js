@@ -43,6 +43,7 @@ export default class Slide {
     }
 
     this.wrapper.addEventListener(moveType, this.onMove);
+    this.transition(false);
   }
 
   // Triggered when user stop holding the button/screen.
@@ -50,6 +51,36 @@ export default class Slide {
     const moveType = event.type === "mouseup" ? "mousemove" : "touchmove";
     this.wrapper.removeEventListener(moveType, this.onMove);
     this.dist.finalPosition = this.dist.movePosition;
+    this.transition(true);
+    this.changeSlideOnEnd(); //to make sure there is a picture on center;
+  }
+
+  // Moves the picture so there is always something on center
+  changeSlideOnEnd() {
+    // Check if the movement is more than half of image width (positive).
+    if (
+      this.dist.movement > this.slide.children[0].children[0].width / 2 &&
+      this.index.next !== undefined
+    ) {
+      this.activeNextSlide(); // Go to next slide
+    }
+    // Check if the movement is more than half of image width (negative).
+    else if (
+      this.dist.movement < -this.slide.children[0].children[0].width / 2 &&
+      this.index.prev !== undefined
+    ) {
+      this.activePrevSlide(); // Go to previous slide
+    }
+    // Move to little or exceed number of imgs, center current image.
+    else {
+      this.changeSlide(this.index.current);
+    }
+  }
+
+  // Smooth transition only when mouseup/touchend
+  // parameter true activate the animation.
+  transition(active) {
+    this.slide.style.transition = active ? "transform .3s" : "";
   }
 
   onMove(event) {
@@ -62,9 +93,9 @@ export default class Slide {
   }
 
   // Calculating and saving mouse movement done,
-  // 1.8 is used to slide quicker than the mouse movement.
+  // 1.5 is used to slide quicker than the mouse movement.
   updatePosition(clientX) {
-    this.dist.movement = (this.dist.startX - clientX) * 1.8;
+    this.dist.movement = (this.dist.startX - clientX) * 1.5;
     return this.dist.finalPosition - this.dist.movement;
   }
 
@@ -117,10 +148,24 @@ export default class Slide {
     this.dist.finalPosition = currentSlide.position; // update position
   }
 
+  // Move to the previous or next image
+  activePrevSlide() {
+    if (this.index.prev !== undefined) {
+      this.changeSlide(this.index.prev);
+    }
+  }
+  activeNextSlide() {
+    if (this.index.next !== undefined) {
+      this.changeSlide(this.index.next);
+    }
+  }
+
   init() {
     this.bindEvents();
+    this.transition(true);
     this.addSlideEvents();
     this.slidesConfig();
+
     return this;
   }
 }
