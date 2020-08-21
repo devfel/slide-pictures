@@ -1,3 +1,5 @@
+import debounce from "./debounce.js";
+
 // Class to slide the elements while holding mouse button.
 
 // Parameters
@@ -17,6 +19,9 @@ export default class Slide {
       startX: 0, // Starting mouse position on X axis
       movement: 0,
     };
+
+    // Class name to be added in the current picture.
+    this.activeClass = "active";
   }
 
   // Binders necessery due to the EventListener Callbacks.
@@ -24,6 +29,7 @@ export default class Slide {
     this.onStart = this.onStart.bind(this);
     this.onMove = this.onMove.bind(this);
     this.onEnd = this.onEnd.bind(this);
+    this.onResize = debounce(this.onResize.bind(this), 100);
   }
 
   // Triggered when the user "mouse down".
@@ -146,6 +152,7 @@ export default class Slide {
     this.moveSlide(currentSlide.position);
     this.slidesIndexNav(index);
     this.dist.finalPosition = currentSlide.position; // update position
+    this.changeActiveClass();
   }
 
   // Move to the previous or next image
@@ -160,11 +167,31 @@ export default class Slide {
     }
   }
 
+  // Add a class name on the current selected picture.
+  changeActiveClass() {
+    this.slideArray.forEach((item) =>
+      item.elem.classList.remove(this.activeClass)
+    );
+    this.slideArray[this.index.current].elem.classList.add(this.activeClass);
+  }
+
+  // Reset and reload configuration if the screen is resized by the user.
+  onResize() {
+    setTimeout(() => {
+      this.slidesConfig();
+      this.changeSlide(this.index.current);
+    }, 1000);
+  }
+  addResizeEvent() {
+    window.addEventListener("resize", this.onResize);
+  }
+
   init() {
     this.bindEvents();
     this.transition(true);
     this.addSlideEvents();
     this.slidesConfig();
+    this.addResizeEvent();
 
     return this;
   }
