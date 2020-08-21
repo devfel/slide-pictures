@@ -8,7 +8,7 @@ import debounce from "./debounce.js";
 //wrapper: class or id selector for the section or div wrapper.
 //ie: '.wrapper' - No default, can't be empty
 
-export default class Slide {
+export class Slide {
   constructor(slide, wrapper) {
     this.slide = document.querySelector(slide);
     this.wrapper = document.querySelector(wrapper);
@@ -29,7 +29,11 @@ export default class Slide {
     this.onStart = this.onStart.bind(this);
     this.onMove = this.onMove.bind(this);
     this.onEnd = this.onEnd.bind(this);
+
     this.onResize = debounce(this.onResize.bind(this), 100);
+
+    this.activePrevSlide = this.activePrevSlide.bind(this);
+    this.activeNextSlide = this.activeNextSlide.bind(this);
   }
 
   // Triggered when the user "mouse down".
@@ -192,7 +196,22 @@ export default class Slide {
     this.addSlideEvents();
     this.slidesConfig();
     this.addResizeEvent();
+    this.changeSlide(0);
 
     return this;
+  }
+}
+
+// Subclass of Slide, handle the navigation with arrows.
+export class SlideNav extends Slide {
+  addArrow(prev, next) {
+    this.prevElement = document.querySelector(prev);
+    this.nextElement = document.querySelector(next);
+    this.addArrowEvent();
+  }
+
+  addArrowEvent() {
+    this.prevElement.addEventListener("click", this.activePrevSlide);
+    this.nextElement.addEventListener("click", this.activeNextSlide);
   }
 }
