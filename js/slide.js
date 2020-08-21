@@ -22,6 +22,9 @@ export class Slide {
 
     // Class name to be added in the current picture.
     this.activeClass = "active";
+
+    // Creating event to track image change for paging highlight
+    this.changeEvent = new Event("changeEvent");
   }
 
   // Binders necessery due to the EventListener Callbacks.
@@ -34,6 +37,8 @@ export class Slide {
 
     this.activePrevSlide = this.activePrevSlide.bind(this);
     this.activeNextSlide = this.activeNextSlide.bind(this);
+    this.eventControl = this.eventControl.bind(this);
+    this.activeControlItem = this.activeControlItem.bind(this);
   }
 
   // Triggered when the user "mouse down".
@@ -157,6 +162,7 @@ export class Slide {
     this.slidesIndexNav(index);
     this.dist.finalPosition = currentSlide.position; // update position
     this.changeActiveClass();
+    this.wrapper.dispatchEvent(this.changeEvent);
   }
 
   // Move to the previous or next image
@@ -202,7 +208,7 @@ export class Slide {
   }
 }
 
-// Subclass of Slide, handle the navigation with arrows.
+// Subclass of Slide, handle the navigation with Arrows and Paging.
 export class SlideNav extends Slide {
   addArrow(prev, next) {
     this.prevElement = document.querySelector(prev);
@@ -213,5 +219,46 @@ export class SlideNav extends Slide {
   addArrowEvent() {
     this.prevElement.addEventListener("click", this.activePrevSlide);
     this.nextElement.addEventListener("click", this.activeNextSlide);
+  }
+
+  // Creating the html and css elements for Paging/Pagination.
+  createControl() {
+    const control = document.createElement("ul");
+    control.dataset.control = "slide";
+
+    this.slideArray.forEach((item, index) => {
+      control.innerHTML += `
+      <li>
+        <a href="#slide${index + 1}">${index + 1}</a>
+      </li>`;
+    });
+    this.wrapper.appendChild(control);
+    return control;
+  }
+
+  // Creating the events to control Paging/Pagination.
+  eventControl(item, index) {
+    item.addEventListener("click", (event) => {
+      event.preventDefault();
+      this.changeSlide(index);
+    });
+    this.wrapper.addEventListener("changeEvent", this.activeControlItem);
+  }
+
+  addControl(customControl) {
+    this.control =
+      document.querySelector(customControl) || this.createControl();
+    this.controlArray = [...this.control.children];
+
+    this.activeControlItem();
+    this.controlArray.forEach(this.eventControl);
+  }
+
+  // Highlight the paging of the current selected picture.
+  activeControlItem() {
+    this.controlArray.forEach((item) =>
+      item.classList.remove(this.activeClass)
+    );
+    this.controlArray[this.index.current].classList.add(this.activeClass);
   }
 }
