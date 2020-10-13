@@ -1,4 +1,4 @@
-# Machines House
+# Picture Slider
 
 > Description
 
