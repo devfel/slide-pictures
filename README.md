@@ -89,7 +89,7 @@ No extra libraries or frameworks so, there is no dependencies to install.
 
 ## 📝 Liceses <a name = "licenses"></a>
 
-- Distributed under the MIT License.
+- Distributed under the MIT License - see the [LICENSE.md](https://github.com/devfel/slide-pictures/blob/master/LICENSE.md) file for details.
 
 ---
 
