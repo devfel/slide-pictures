@@ -19,7 +19,7 @@
 In this <b>responsive</b> project using HTML, CSS and Vanilla JavaScript I created a picture slider (a.k.a. as photo slider) to show several pictures and the user can slide through them using different ways, arrows, hold and drag or image clicking</p>
   <p align="center">
   <a href="" rel="noopener">
- <img  width="600px" src="./assets/readme.jpg" alt=""></a>
+ <img  width="600px" src="./imgs/picture-slider.gif" alt=""></a>
 </p>
 
 ---
